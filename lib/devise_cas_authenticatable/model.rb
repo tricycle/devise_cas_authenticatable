@@ -22,20 +22,12 @@ module Devise
             resource = new(conditions) if (resource.nil? and ::Devise.cas_create_user)
             return nil unless resource
 
-            if resource.new_record?
-              if resource.respond_to? :cas_extra_attributes=
-                resource.cas_extra_attributes = ticket.response.extra_attributes
-              end
-
-              create(conditions)
-            else
-              if resource.respond_to? :cas_extra_attributes=
-                resource.cas_extra_attributes = ticket.response.extra_attributes
-                resource.save
-              end
-
-              resource
+            if resource.respond_to? :cas_extra_attributes=
+              resource.cas_extra_attributes = ticket.response.extra_attributes
             end
+
+            resource.save if resource.changed?
+            resource
           end
         end
       end
